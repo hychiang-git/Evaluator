@@ -305,6 +305,7 @@ def _make_solver(
             container_env=container_env,
             max_input_tokens=getattr(svc, "max_input_tokens", None),
             max_output_tokens=getattr(svc, "max_output_tokens", None),
+            tokenizer=getattr(svc, "tokenizer", None),
             cmd_timeout=getattr(solver_cfg, "cmd_timeout", None),
             timeout_strategy=getattr(solver_cfg, "timeout_strategy", "override"),
             max_agent_timeout=getattr(solver_cfg, "max_agent_timeout", None),
@@ -784,9 +785,9 @@ def _start_proxy(
     capture_cfg = getattr(proxy_cfg, "model_traffic", None) if proxy_cfg is not None else None
     traffic_store = ModelTrafficStore(
         service_name=service_name,
-        capture_tool_calls=getattr(capture_cfg, "capture_tool_calls", False),
-        capture_reasoning=getattr(capture_cfg, "capture_reasoning", False),
-        capture_messages=getattr(capture_cfg, "capture_messages", False),
+        capture_tool_calls=getattr(capture_cfg, "capture_tool_calls", True),
+        capture_reasoning=getattr(capture_cfg, "capture_reasoning", True),
+        capture_messages=getattr(capture_cfg, "capture_messages", True),
         max_content_chars=getattr(capture_cfg, "max_content_chars", 100_000),
     )
     register_store(traffic_store)

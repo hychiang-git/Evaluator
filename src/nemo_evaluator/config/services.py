@@ -62,18 +62,18 @@ class InterceptorConfig(BaseModel):
 
 
 class ModelTrafficCaptureConfig(BaseModel):
-    """Opt-in extras for what ``model_traffic.jsonl`` captures per call.
+    """Controls what ``model_traffic.jsonl`` captures per call.
 
-    By default the store records stats only (tokens, finish_reason, latency,
-    model, tool_calls.count). Set any of these flags to ``true`` to also
-    persist the corresponding fields from the upstream response.
+    By default the store records the assistant message, reasoning content, and
+    full tool-call payloads in addition to stats. Set these flags to ``false``
+    to opt out of the corresponding response fields.
     """
 
     model_config = ConfigDict(extra="forbid")
 
-    capture_tool_calls: bool = False  # full {id, name, arguments} per call
-    capture_reasoning: bool = False  # message.reasoning_content (or SSE delta)
-    capture_messages: bool = False  # message.content
+    capture_tool_calls: bool = True  # full {id, name, arguments} per call
+    capture_reasoning: bool = True  # message.reasoning_content (or SSE delta)
+    capture_messages: bool = True  # message.content
     max_content_chars: int = 100_000  # truncation guard for the three above
 
 
@@ -135,6 +135,7 @@ class _ModelServerBase(BaseModel):
     reasoning_pattern: str | None = None
     max_input_tokens: int | None = None
     max_output_tokens: int | None = None
+    tokenizer: str | None = None
     generation: GenerationConfig = Field(default_factory=GenerationConfig)
     proxy: ProxyConfig | None = None
     depends_on: list[str] = Field(default_factory=list)
@@ -248,6 +249,7 @@ class ExternalApiService(BaseModel):
     health_path: str | None = None
     max_input_tokens: int | None = None
     max_output_tokens: int | None = None
+    tokenizer: str | None = None
     generation: GenerationConfig = Field(default_factory=GenerationConfig)
     proxy: ProxyConfig | None = None
 
